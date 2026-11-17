@@ -1,0 +1,2 @@
+---
+download_url: https://github.com/softhsm/SoftHSMv2/archive/refs/tags/{{ softhsm_version }}.tar.gz

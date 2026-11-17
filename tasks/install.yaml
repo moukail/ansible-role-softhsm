@@ -1,0 +1,62 @@
+---
+- name: Install SoftHSM build dependencies
+  ansible.builtin.dnf:
+    name:
+      - libtool
+
+- name: Create temporary build directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: build
+  register: tmp_dir
+
+- name: Download SoftHSM {{ softhsm_version }}
+  ansible.builtin.get_url:
+    url: "{{ download_url }}"
+    dest: "{{ tmp_dir.path }}/softhsm-{{ softhsm_version }}.tar.gz"
+    owner: root
+    group: root
+    mode: '0644'
+  register: softhsm_source
+
+- name: Unpacking SoftHSM
+  ansible.builtin.unarchive:
+    copy: false
+    dest: "{{ tmp_dir.path }}"
+    src: "{{ softhsm_source.dest }}"
+
+- name: Set build_dir
+  ansible.builtin.set_fact:
+    build_dir: "{{ tmp_dir.path }}/SoftHSMv2-{{ softhsm_version }}"
+
+- name: Generate configure script
+  ansible.builtin.command:
+    cmd: sh autogen.sh
+    chdir: "{{ build_dir }}"
+    creates: "{{ build_dir }}/configure"
+
+- name: Configure SoftHSM
+  ansible.builtin.command:
+    cmd: >
+      ./configure
+      --prefix=/
+      --sysconfdir=/etc
+      --localstatedir=/var
+      --with-crypto-backend=openssl
+      --disable-openssl-engines
+      --disable-p11-kit
+    chdir: "{{ build_dir }}"
+    creates: "{{ build_dir }}/Makefile"
+
+- name: Compile SoftHSM
+  ansible.builtin.command:
+    cmd: make -j{{ ansible_processor_vcpus }}
+    chdir: "{{ build_dir }}"
+    creates: "{{ build_dir }}/src/lib/.libs/libsofthsm2.so"
+
+- name: Install SoftHSM
+  ansible.builtin.command:
+    cmd: make install
+    chdir: "{{ build_dir }}"
+    creates: "/lib/softhsm/libsofthsm2.so"
+
