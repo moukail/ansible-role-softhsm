@@ -1,2 +1,4 @@
 ---
 softhsm_version: 2.7.0
+softhsm_prefix: /
+softhsm_library: "{{ softhsm_prefix }}/lib/softhsm/libsofthsm2.so"

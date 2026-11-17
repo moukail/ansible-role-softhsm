@@ -39,9 +39,7 @@
   ansible.builtin.command:
     cmd: >
       ./configure
-      --prefix=/
-      --sysconfdir=/etc
-      --localstatedir=/var
+      --prefix={{ softhsm_prefix }}
       --with-crypto-backend=openssl
       --disable-openssl-engines
       --disable-p11-kit
@@ -58,5 +56,16 @@
   ansible.builtin.command:
     cmd: make install
     chdir: "{{ build_dir }}"
-    creates: "/lib/softhsm/libsofthsm2.so"
+    creates: "{{ softhsm_library }}"
 
+- name: Verify library exists
+  ansible.builtin.stat:
+    path: "{{ softhsm_library }}"
+  register: softhsm_library_stat
+
+- name: Assert library installed
+  ansible.builtin.assert:
+    that:
+      - softhsm_library_stat.stat.exists
+      - softhsm_library_stat.stat.isreg
+    fail_msg: "SoftHSM library was not installed."
