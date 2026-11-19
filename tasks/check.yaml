@@ -7,11 +7,17 @@
 
 - name: Check whether any installed version meets requirement
   ansible.builtin.set_fact:
-    softhsm_install_required: "{{ version(softhsm_version, '>=', version_type='loose')}}"
+    softhsm_installed_version: >-
+      {{ softhsm_result.stdout | trim if softhsm_result.rc == 0 else '0.0.0' }}
+    softhsm_install_required: >-
+      {{
+        softhsm_result.rc != 0 or
+        softhsm_result.stdout is version(softhsm_version,'<',version_type='loose')
+      }}
 
 - name: Display SoftHSM status
   ansible.builtin.debug:
     msg:
-      installed_version: "{{ softhsm_result.stdout }}"
+      installed_version: "{{ softhsm_installed_version }}"
       requested_version: "{{ softhsm_version }}"
       installation_required: "{{ softhsm_install_required }}"
