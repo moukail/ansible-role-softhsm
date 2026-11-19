@@ -10,9 +10,7 @@
     softhsm_installed_version: >-
       {{ softhsm_result.stdout | trim if softhsm_result.rc == 0 else '0.0.0' }}
     softhsm_install_required: >-
-      {{
-        softhsm_result.stdout is version(softhsm_version,'<',version_type='loose')
-      }}
+      {{ softhsm_result.stdout is version(softhsm_version,'<',version_type='loose') }}
 
 - name: Display SoftHSM status
   ansible.builtin.debug:
