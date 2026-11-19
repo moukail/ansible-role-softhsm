@@ -11,7 +11,6 @@
       {{ softhsm_result.stdout | trim if softhsm_result.rc == 0 else '0.0.0' }}
     softhsm_install_required: >-
       {{
-        softhsm_result.rc != 0 or
         softhsm_result.stdout is version(softhsm_version,'<',version_type='loose')
       }}
 
