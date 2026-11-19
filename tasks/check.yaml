@@ -12,6 +12,6 @@
 - name: Display SoftHSM status
   ansible.builtin.debug:
     msg:
-      installed_versions: "{{ softhsm_result.stdout.split()[1] }}"
+      installed_version: "{{ softhsm_result.stdout }}"
       requested_version: "{{ softhsm_version }}"
       installation_required: "{{ softhsm_install_required }}"
