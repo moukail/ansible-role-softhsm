@@ -1,14 +1,7 @@
 ---
-- name: Get current softhsm version
-  ansible.builtin.shell: command -v softhsm2-util && softhsm2-util --version
-  register: current_version
-  changed_when: false
-  failed_when: false
+- name: Check installed SoftHSM version
+  ansible.builtin.include_tasks: check.yaml
 
-- name: Check if softhsm is already installed
-  ansible.builtin.debug:
-    msg: "Current softhsm version is {{ current_version.stdout }}"
-
-- name: Proceed to install softhsm
-  when: current_version.stdout != softhsm_version
+- name: Install SoftHSM when required
+  when: softhsm_install_required | bool
   ansible.builtin.include_tasks: install.yaml

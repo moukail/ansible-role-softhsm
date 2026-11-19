@@ -1,0 +1,17 @@
+---
+- name: Check SoftHSM version
+  ansible.builtin.command: softhsm2-util --version
+  register: softhsm_result
+  changed_when: false
+  failed_when: false
+
+- name: Check whether any installed version meets requirement
+  ansible.builtin.set_fact:
+    softhsm_install_required: version(softhsm_version, '>=', version_type='loose')
+
+- name: Display SoftHSM status
+  ansible.builtin.debug:
+    msg:
+      installed_versions: "{{ softhsm_result.stdout.split()[1]] }}"
+      requested_version: "{{ softhsm_version }}"
+      installation_required: "{{ softhsm_install_required }}"
