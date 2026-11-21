@@ -8,3 +8,8 @@ galaxy_info:
   galaxy_tags:
     - SoftHSM
     - security
+
+dependencies:
+  - name: ansible-role-openssl
+    src: git+https://github.com/moukail/ansible-role-openssl.git
+    version: main
