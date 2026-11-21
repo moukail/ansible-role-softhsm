@@ -3,6 +3,8 @@
   ansible.builtin.dnf:
     name:
       - libtool
+      - gcc-c++
+      - openssl-devel
 
 - name: Create temporary build directory
   ansible.builtin.tempfile:
